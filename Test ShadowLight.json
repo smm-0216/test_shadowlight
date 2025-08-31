@@ -1,0 +1,186 @@
+{
+  "name": "Test ShadowLight",
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -480,
+        -160
+      ],
+      "id": "31663f90-bb76-4e04-83af-cd2cfe02cc9c",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1,
+      "position": [
+        -16,
+        -160
+      ],
+      "id": "d0011c1e-c6f9-4269-8d96-751ddd5f00ad",
+      "name": "Extract from File"
+    },
+    {
+      "parameters": {
+        "operation": "write",
+        "fileName": "C:/Users/santi/OneDrive/Documentos/ShadowLight/data/enriched/enriched.csv",
+        "options": {
+          "append": false
+        }
+      },
+      "type": "n8n-nodes-base.readWriteFile",
+      "typeVersion": 1,
+      "position": [
+        624,
+        -160
+      ],
+      "id": "b86a2215-29fb-4f13-a9d3-6374cac6a811",
+      "name": "Read/Write Files from Disk1"
+    },
+    {
+      "parameters": {
+        "fileSelector": "C:/Users/santi/OneDrive/Documentos/ShadowLight/data/raw/ads_spend.csv",
+        "options": {
+          "fileExtension": "csv",
+          "fileName": "ads_spend"
+        }
+      },
+      "type": "n8n-nodes-base.readWriteFile",
+      "typeVersion": 1,
+      "position": [
+        -224,
+        -160
+      ],
+      "id": "e6853d44-68c7-4e0e-b12d-c8e3a1494427",
+      "name": "Read File"
+    },
+    {
+      "parameters": {
+        "jsCode": "return $input.all().map(i => ({\n  json: {\n    ...i.json,\n    created_at: $now.toISO(),\n    created_by: 'n8n',\n    namefile: $(\"Read File\").first().binary.data.fileName ,\n  }\n}));"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        192,
+        -160
+      ],
+      "id": "99fd28a6-3060-4eb1-9a1f-f158969b2a8c",
+      "name": "Create Metadata Columns"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.convertToFile",
+      "typeVersion": 1.1,
+      "position": [
+        400,
+        -160
+      ],
+      "id": "64a08da2-d795-4d9f-b171-60a13e423e5c",
+      "name": "Convert to File"
+    },
+    {
+      "parameters": {
+        "command": "python \"C:/Users/santi/OneDrive/Documentos/ShadowLight/update_wh.py\""
+      },
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1,
+      "position": [
+        848,
+        -160
+      ],
+      "id": "b128bb87-7ec2-415f-96f1-7e60b461245c",
+      "name": "Update Warehouse"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "Read File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract from File": {
+      "main": [
+        [
+          {
+            "node": "Create Metadata Columns",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Read File": {
+      "main": [
+        [
+          {
+            "node": "Extract from File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create Metadata Columns": {
+      "main": [
+        [
+          {
+            "node": "Convert to File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Convert to File": {
+      "main": [
+        [
+          {
+            "node": "Read/Write Files from Disk1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Read/Write Files from Disk1": {
+      "main": [
+        [
+          {
+            "node": "Update Warehouse",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update Warehouse": {
+      "main": [
+        []
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "edf809b3-6f85-4023-ab47-3547c950cc83",
+  "meta": {
+    "instanceId": "80aac759f581d3507bca70b568642de8876ca118e8ae2e0b6df2266ff8b7eb5f"
+  },
+  "id": "zySLbZFoFXIV9Mie",
+  "tags": []
+}
